@@ -31,10 +31,7 @@
           </el-icon>
         </span>
       </el-form-item>
-      <el-button
-        class="login-button"
-        type="primary"
-        @click="handleLoginSubmit(LoginForm)"
+      <el-button class="login-button" type="primary" @click="handleLoginSubmit"
         >登录</el-button
       >
     </el-form>
@@ -44,10 +41,17 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { validatePassword } from './rule'
-import { login } from '../../user/login'
+// import UserApi from '../../user/login'
+import md5 from 'md5'
+import util from '../../utils/util'
+import { useStore } from 'vuex'
+// import { useRouter } from 'vue-router'
+// import { ElMessage } from 'element-plus'
 
 const inputType = ref('password')
-const loadingValue = ref(false)
+const LoginForm = ref()
+const store = useStore()
+// const router = useRouter()
 
 const loginForm = reactive({
   username: 'admin',
@@ -76,17 +80,13 @@ const passwordIconStatus = computed(() => {
   return inputType.value === 'password' ? 'eye' : 'eye-open'
 })
 
-const handleLoginSubmit = async (formName) => {
-  loadingValue.value = true
-  login(loginForm)
-  if (JSON.parse(localStorage.getItem('token'))) {
-    loadingValue.value = false
-  }
-  if (!formName) return
-  await formName.validate((valid) => {
-    console.log(formName)
+const handleLoginSubmit = async () => {
+  if (!LoginForm.value) return
+  await LoginForm.value.validate(async (valid) => {
     if (valid) {
-      alert('登录')
+      const newLoginForm = util.deepCopy(loginForm)
+      newLoginForm.password = md5(newLoginForm.password)
+      store.dispatch('user/login', newLoginForm)
     }
   })
 }
