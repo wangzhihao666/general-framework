@@ -2,7 +2,6 @@ import axios from 'axios'
 import md5 from 'md5'
 import { ElMessage } from 'element-plus'
 import loading from './loading'
-import store from '@/store'
 // import { useStore } from 'vuex'
 // const store = useStore()
 
@@ -21,11 +20,6 @@ instance.interceptors.request.use(
     config.headers.codeType = time
 
     // TODO 将token 通过请求头发送给后端
-    // 在这个位置需要统一的去注入token
-    if (store.getters.token) {
-      // 如果token存在 注入token
-      config.headers.Authorization = `Bearer ${store.getters.token}`
-    }
 
     return config
   },
@@ -42,8 +36,10 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (res) => {
     loading.close()
+    const { data } = res.data
     if (res.data.success === true) {
       ElMessage.success('登陆成功')
+      return data
     } else if (res.data.success === false) {
       ElMessage.error('用户名或密码错误')
     } else {

@@ -45,13 +45,13 @@ import { validatePassword } from './rule'
 import md5 from 'md5'
 import util from '../../utils/util'
 import { useStore } from 'vuex'
-// import { useRouter } from 'vue-router'
+import { useRouter } from 'vue-router'
 // import { ElMessage } from 'element-plus'
 
 const inputType = ref('password')
 const LoginForm = ref()
 const store = useStore()
-// const router = useRouter()
+const router = useRouter()
 
 const loginForm = reactive({
   username: 'admin',
@@ -86,7 +86,11 @@ const handleLoginSubmit = async () => {
     if (valid) {
       const newLoginForm = util.deepCopy(loginForm)
       newLoginForm.password = md5(newLoginForm.password)
-      store.dispatch('user/login', newLoginForm)
+      const response = await store.dispatch('user/login', newLoginForm)
+      if (response.token) {
+        console.log(response.token)
+        router.push('/profile')
+      }
     }
   })
 }
