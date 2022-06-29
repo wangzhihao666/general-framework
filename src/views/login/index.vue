@@ -89,7 +89,7 @@ const handleLoginSubmit = async () => {
       const response = await store.dispatch('user/login', newLoginForm)
       if (response.token) {
         console.log(response.token)
-        router.push('/profile')
+        router.push('/')
       }
     }
   })
