@@ -10,30 +10,38 @@
  *    进入的不是登录页 跳转到登录页
  *
  */
-// import router from './router/index'
-// import store from './store/index'
 import router from './router'
-// import store from './store'
-import { getItem } from './utils/storage'
+import store from './store'
 
 // 定义一个用户未登录情况下可以访问的白名单
 const whiteList = ['/login']
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // 获取token
-  const token = getItem('token')
-  console.log(token)
+  const token = store.getters.token
+  // 获取用户信息
+  const userInfo = store.getters.userInfo
   if (token) {
-    if (to.path === whiteList) {
+    if (to.path === '/login') {
       next(from.path)
     } else {
-      next()
+      if (userInfo) {
+        next()
+      } else {
+        // 调用获取信息接口
+        const response = await store.dispatch('user/getUserInfo')
+        if (response) {
+          next()
+        } else {
+          next('/login')
+        }
+      }
     }
   } else {
     if (whiteList.includes(to.path)) {
       next()
     } else {
-      next(whiteList)
+      next('/login')
     }
   }
 })

@@ -1,40 +1,76 @@
 <template>
-  <div class="navbar">
-    <!-- 左侧图标 -->
-    <div class="icon">
-      <el-icon class="el-icon" :size="25"><Fold /></el-icon>
-      <el-icon><Expand /></el-icon>
+  <div class="navbar clearfix">
+    <div class="navbar-left">left</div>
+    <div class="navbar-right">
+      <el-dropdown trigger="click" @command="handleCommand">
+        <span class="el-dropdown-link">
+        <el-avatar shape="square" :size="30" :src="avatarUrl" />
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item command="home">首页</el-dropdown-item>
+            <el-dropdown-item command="profile">课程首页</el-dropdown-item>
+            <el-dropdown-item command="logout" divided
+              >退出登录</el-dropdown-item
+            >
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
   </div>
 </template>
 
 <script setup>
-import { Fold, Expand } from '@element-plus/icons-vue'
-// 左
-// <el-icon><Fold /></el-icon>
-// 右
-// <el-icon><Expand /></el-icon>
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useStore } from 'vuex'
+
+const store = useStore()
+const router = useRouter()
+
+const avatarUrl = computed(() => {
+  return store.getters.userInfo.avatar
+})
+
+const handleCommand = (command) => {
+  switch (command) {
+    case 'home':
+      handleToHome()
+      break
+    case 'logout':
+      handleLogout()
+      break
+  }
+}
+
+const handleToHome = () => {
+  router.push('/')
+}
+
+const handleLogout = async () => {
+  try {
+    await store.dispatch('user/logout')
+    router.push('/login')
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <style lang="scss" scoped>
 .navbar {
   height: 50px;
   overflow: hidden;
+  line-height: 50px;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 4px rgb(0 21 41 / 8%);
-
-  .icon{
-    width: 50px;
-    height: 50px;
-    background-color: #fff;
-    text-align: center;
-    .el-icon{
-      margin-top: 10px;
-    }
+  padding: 0 20px;
+  .navbar-left {
+    float: left;
   }
-  .icon :hover{
-    background-color: #e5e5e5;
+  .navbar-right {
+    float: right;
   }
 }
 </style>
