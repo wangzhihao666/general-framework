@@ -117,7 +117,6 @@ const service = axios.create({
 // 请求拦截器
 service.interceptors.request.use(
   (config) => {
-    // 打开loading加载
     loading.open()
 
     // 调用接口要传的参数
@@ -125,7 +124,7 @@ service.interceptors.request.use(
     config.headers.icode = icode
     config.headers.codeType = time
 
-    // TODO 将token 通过请求头发送给后台
+    // 把token 通过请求头发送给后台
     const token = store.getters.token
     if (token) config.headers.Authorization = 'Bearer ' + token
 
@@ -165,7 +164,7 @@ service.interceptors.response.use(
     // 关闭loading加载
     loading.close()
 
-    // TODO token过期状态  401 描述信息  无感知登录 无感知刷新
+    // token过期状态  401 描述信息  无感知登录 无感知刷新
     if (
       error.response &&
       error.response.data &&
@@ -175,13 +174,6 @@ service.interceptors.response.use(
       router.push('/login')
     }
 
-    // 单用户登录
-    // if (error.response && error.response.data && error.response.data.code === 401) {
-    //   store.dispatch('user/lgout')
-    //   router.push('/login')
-    // }
-
-    // 响应失败进行信息提示
     _showError(error.message)
     return Promise.reject(error)
   }
@@ -201,7 +193,7 @@ const request = (options) => {
   return service(options)
 }
 
-// 获取icode、
+// 获取icode
 function getTestICode() {
   const now = parseInt(Date.now() / 1000)
   const code = now + 'LGD_Sunday-1991'

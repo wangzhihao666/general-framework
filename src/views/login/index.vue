@@ -53,7 +53,7 @@ const store = useStore()
 const router = useRouter()
 
 const loginForm = reactive({
-  username: 'admin',
+  username: 'super-admin',
   password: '123456'
 })
 

@@ -1,10 +1,11 @@
 import UserApi from '../../user/login'
 import { setItem, getItem, removeItem } from '../../utils/storage'
+import { resetRouter } from '../../utils/removeRouter'
 export default {
   namespaced: true,
   state: () => ({
     token: getItem('token') || '',
-    userInfo: getItem('userInfo') || ''
+    userInfo: {}
   }),
   mutations: {
     setToken(state, token) {
@@ -14,7 +15,6 @@ export default {
     },
     setUserInfo(state, userInfo) {
       state.userInfo = userInfo
-      setItem('userInfo', userInfo)
       console.log(userInfo)
     }
   },
@@ -38,6 +38,7 @@ export default {
       }
     },
     logout({ commit }) {
+      resetRouter()
       commit('setToken', '')
       commit('setUserInfo', '')
       removeItem('token')
